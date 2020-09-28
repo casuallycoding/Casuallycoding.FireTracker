@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -17,23 +19,17 @@ namespace Casuallycoding.FireTracker.Core
 
         public void Run()
         {
-            var connectionString = "mongodb://localhost:27017/CasuallyCoding";
-
-            MongoClient dbClient = new MongoClient(connectionString);
-
-            var dbList = dbClient.ListDatabases().ToList();
 
 
-            var database = dbClient.GetDatabase("Financial_Independence");
+            IReadOnlyRepository<Savings> mongoRepositroy = new MongoRepository<Savings>("mongodb://localhost:27017/CasuallyCoding", "Financial_Independence");            
+            
+            mongoRepositroy.Create(new Savings() {Type = "Savings 1", Value = 0  });
+            mongoRepositroy.Create(new Savings() {Type = "Savings 2", Value = 0});
+            mongoRepositroy.Create(new Savings() {Type = "Savings 3", Value = 0 });
 
-            var collection =database.GetCollection<Savings>("Savings");
-            //.InsertOne(new Savings() { SavingsId = 1,Value = 10});
+            var val2s = mongoRepositroy.Read(p => p.Type == "Savings 1");
 
-            var val =  collection.Find<Savings>(p => p.SavingsId ==1).FirstOrDefault();
-
-            var filter = Builders<Savings>.Filter.Eq("SavingsId", 1);
-            var savings1 = collection.Find(filter).FirstOrDefault();
-            Console.WriteLine(savings1.Value.ToString());
+            
 
 
 
@@ -43,14 +39,22 @@ namespace Casuallycoding.FireTracker.Core
 
 
     [DataContract]
-    public class Savings
+    public class Savings : IDatatable
     {
         [BsonId]
         [DataMember]
-        public int SavingsId { get; set; }
+        public int ID { get; set; }
 
         [DataMember]
-        public int Value { get; set; }
+        public double Value { get; set; }
+        
+        [DataMember]
+        public string Type { get; set; }
+
+        [DataMember]
+        public DateTime Date { get; set; } = DateTime.Now;
+
+
 
     }
 }
