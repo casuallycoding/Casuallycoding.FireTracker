@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Casuallycoding.FireTracker.Core
 {
-    class MongoRepository<T>  : IReadOnlyRepository<T> where T : IDatatable
+    class MongoRepository<T>  : IImmutableRepository<T> where T : IDatatable
     {
         private readonly MongoClient _client;
         private readonly IMongoDatabase _database;
@@ -49,6 +49,14 @@ namespace Casuallycoding.FireTracker.Core
         public T Read(T value)
         {
             var val = _collection.Find<T>(p => p.ID == value.ID).FirstOrDefault(); //Look for val
+            return val;
+        }
+
+
+        public T ReadLast()
+        {
+            var lastId = ReadAll().Max(p => p.ID);
+            var val = _collection.Find<T>(p => p.ID == lastId).FirstOrDefault(); //Look for val
             return val;
         }
 

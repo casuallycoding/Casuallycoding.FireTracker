@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Casuallycoding.FireTracker.Core
 {
-    interface IReadOnlyRepository<T> where T : IDatatable
+    interface IImmutableRepository<T> where T : IDatatable
     {
 
         public T Create(T value);
@@ -16,8 +16,6 @@ namespace Casuallycoding.FireTracker.Core
 
         public IEnumerable<T> ReadAll();
 
-
-        
-
-    }
+        public T ReadLast();
+    } 
 }
